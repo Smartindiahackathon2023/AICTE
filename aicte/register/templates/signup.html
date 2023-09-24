@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+
+      {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'signup.css' %}"> {% endcomment %}
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   </head>
+   <body>
+      <div class="container mt-4">
+    
+         <div class="p-4 m-4">
+     
+             
+             <div class="col-lg-5 rounded mx-auto border pt-4">
+                 <div class="text-center col">
+                 
+                     
+                 <!-- <hr> -->
+                 <div class="display-8">Signup for Educator</div>
+                 <hr>
+                 </div>
+                 <h3 hidden class="alert alert-light border rounded">Create An Account</h3>
+                 <form action="/signup/" method="POST">
+                     {% csrf_token %}
+                     {% if form.errors %}
+                         
+                             {{form.errors}}
+                         
+                     {% endif %}
+                     <!-- firstname -->
+                     <div class="form-group">
+                         {{form.username.label}}
+                         <br>
+                         {{form.username}}
+                     </div>
+                     <div class="form-group">
+                         {{form.email.label}}
+                         <br>
+                         {{form.email}}
+                     </div>
+                     <div class="form-group">
+                         {{form.phone.label}}
+                         <br>
+                         {{form.phone}}
+                     </div>
+                     <div class="form-group">
+                         {{form.password.label}}
+                         <br>
+                         {{form.password}}
+                     </div>
+                     
+                     <div class="form-group">
+                        {{form.institute.label}}
+                        <br>
+                        {{form.institute}}
+                    </div>
+                     <hr>
+                     <div class="form-group">
+                         <input class="btn btn-sm btn-info" type="submit" value="Create An Account ">
+                     </div>
+                     <a href="/signup/login">already have an account?</a>
+                     
+                 </form>
+             </div>
+         </div>
+     </div>
+   </body>
+</html>
