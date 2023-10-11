@@ -307,6 +307,12 @@ body {
 
 
 /* MAIN */
+#main button{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 50px;
+}
 #content main {
 	width: 100%;
 	padding: 36px 24px;

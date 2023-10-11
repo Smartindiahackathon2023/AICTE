@@ -14,14 +14,16 @@ def developerpanel(request):
         if form.is_valid():
             
             body=form.cleaned_data['body']
+            
             user_email=request.session.get('user_email')
             user=customuser.objects.get(email=user_email)
             curriculumn=Curriculumn(body=body)
             curriculumn.save()
             curriculumn.user.add(user)
             print(curriculumn)
-            return redirect('/')      
+            return redirect('/dashboard/develop')      
     form=CurriculumnForm()
+    
     curriculumn=get_object_or_404(Curriculumn,id=16)
     form=CurriculumnForm(instance=curriculumn)
     return render(request,'developerpanel.html',{'form':form})
