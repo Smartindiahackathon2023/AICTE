@@ -3,9 +3,9 @@ from .forms import CurriculumnForm
 from django.contrib import messages
 from register.models import customuser,Developer
 from .models import Curriculumn
-
+from pyeditorjs import EditorJsParser
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from .connect_api import main as google_calendar_main
 # Create your views here.
 def developerpanel(request):
@@ -14,7 +14,10 @@ def developerpanel(request):
         if form.is_valid():
             
             body=form.cleaned_data['body']
-            
+            parser = EditorJsParser(body) # initialize the parser
+
+            html = parser.html() # `sanitize=True` requires `bleach` to be installed
+            print(html) # your clean HTML
             user_email=request.session.get('user_email')
             user=customuser.objects.get(email=user_email)
             curriculumn=Curriculumn(body=body)
@@ -40,3 +43,25 @@ def integrate_with_google_calendar(request):
 def dashboard(request):
     if request.method=="GET":
         return render(request,'developer_dahboard.html')
+    
+def tohtml(request):
+    if request.method=="POST":
+        print('hello')
+        return JsonResponse({'message':"hello"})
+    
+    
+    
+    # var token=$('input[name=csrfmiddlewaretoken]').val();
+	# 	jQuery.ajax({
+	# 		method:"POST",
+	# 		url:"{% url 'tohtml' %}",
+	# 		data:{csrfmiddlewaretoken:token},
+	# 		dataType:'json',
+	# 		success: function(response){
+	# 			console.log(response.message)
+				
+	# 		  }
+
+
+	# 	})
+        

@@ -111,14 +111,18 @@
 
 		<!-- MAIN -->
 		<main>
-			<div class="center"><form action="" method="POST">
+			<div class="center">
+				<form action="" method="POST">
                 {% csrf_token %}
                 <!--  -->
                 {{form.media}}
                 <!--  -->
                 <div id="curriculumn" class="form-control large-form" >{{ form.body }}</div>
                 <button>Submit</button>
+				<button type="button" id="tohtmlbutton" >Click Me!</button>
+
               </form></div>
+
 			  
 		</main>
 
@@ -128,7 +132,45 @@
 	
 
 	<script src="{% static 'developerpanel.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script>
+	// Get the form element by its ID or any other suitable method
+	let orginal_length =0;
+	const button = document.getElementById("tohtmlbutton");
+	var formBodyElement = document.getElementById('curriculumn');
+	if (formBodyElement) {
+		var jsonContent = formBodyElement.textContent; 
+		orginal_length=jsonContent.length;
+		console.log(jsonContent.length);}
+
+
+    // Add a "click" event listener to the button
+    button.addEventListener("click", function() {
+		var formBodyElement = document.getElementById('curriculumn');
+		if (formBodyElement) {
+			var jsonContent = formBodyElement.textContent;
+			console.log(jsonContent.length);
+			
+			try {
+				console.log("hello")
+				var jsonData = JSON.parse(jsonContent.substring(0,orginal_length));
+				console.log(jsonData);
+
+			} catch (error) {
+				console.log("Failed to parse JSON content:", error);
+			}
+		} else {
+			console.log("Form body element not found.");
+		}
+		const edjsParser = edjsHTML();
+		const HTML = edjsParser.parse(jsonData);
+		// returns array of html strings per block
+		console.log(HTML);
+    });
+
+
+
+	</script>
 	
 
-</body>
-</html>
+</body>xz
