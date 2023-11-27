@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from .forms import CreateEducatorForm
-from .models import customuser,Educator
+from django.contrib.auth import authenticate, login
+from .models import Developer
 from django.contrib.auth.hashers import make_password,check_password 
 # Create your views here.
 def signup(request):
@@ -23,15 +24,12 @@ def signup(request):
             
             institute=form.cleaned_data['institute']
             
-            user=customuser(username=username,email=email,phone=phone,password=password)
+            user=Developer(username=username,email=email,phone=phone,password=password,institute=institute)
             user.save()
-            if user:
-                educator=Educator(user=user,institute=institute)
-                educator.save()
+            
             return render(request,'home.html')
                 
-def login(request):
-    
+def login_view(request):
     if request.method=='GET':
         return render(request,'login.html')
     else:
@@ -39,12 +37,11 @@ def login(request):
         error_msg=""
         password=user_data.get('password')
         email=user_data.get('email')
-        user=customuser.objects.get(email=email,password=password)
+        user=Developer.objects.get(email=email,password=password)
+        
         print(user)
         if user:
-            
-            request.session['user_email']=user.email
-                
+            login(request,user)
             return redirect("dashboard")
         else:
             error_msg="wrong email or password"

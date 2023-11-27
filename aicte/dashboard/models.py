@@ -1,5 +1,5 @@
 from django.db import models
-from register.models import Developer,customuser
+from register.models import Developer
 from django_editorjs_fields import (
     EditorJsJSONField, 
     EditorJsTextField
@@ -7,7 +7,7 @@ from django_editorjs_fields import (
 
 # Create your models here.
 class Curriculumn(models.Model):
-    user=models.ManyToManyField(customuser)
+    user=models.ManyToManyField(Developer)
     body = EditorJsJSONField(
         plugins=[
             

@@ -1,0 +1,228 @@
+{%extends "dashboardbase.html"%}
+
+{%block Content%}
+		<!-- MAIN -->
+		<!-- MAIN -->
+		<main>
+			<div class="head-title">
+				<div class="left">
+					<h1>Dashboard</h1>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+						<li><i class='bx bx-chevron-right' ></i></li>
+						<li>
+							<a class="active" href="#">Home</a>
+						</li>
+					</ul>
+				</div>
+				<a href="/dashboard/develop" class="btn-download">
+					<i class='bx bxs-cloud-download' ></i>
+					<span class="text">Create Curriculumn</span>
+				</a>
+			</div>
+
+			<ul class="box-info">
+				<li>
+					<i class='bx bxs-calendar-check' ></i>
+					<span class="text">
+						<h3>4</h3>
+						<p>Ongoing Design</p>
+					</span>
+				</li>
+				<li>
+					<i class='bx bxs-group' ></i>
+					<span class="text">
+						<h3>2</h3>
+						<p>Feedbacks</p>
+					</span>
+				</li>
+				<li>
+					<i class="bx ri-link"></i>
+					<span class="text">
+						<h3>500</h3>
+						<p>Connection</p>
+					</span>
+				</li>
+			</ul>
+
+
+			<div class="table-data">
+				<div class="order">
+					<div class="head">
+						<h3>Recent Updates</h3>
+						<i class='bx bx-search' ></i>
+						<i class='bx bx-filter' ></i>
+					</div>
+					<table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Date</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<img src="img/profileimg.png">
+									<p>vaibhav</p>
+								</td>
+								<td>01-10-2023</td>
+								<td><span class="status completed">Completed</span></td>
+							</tr>
+							<tr>
+								<td>
+									<img src="img/profileimg.png">
+									<p>Juhi</p>
+								</td>
+								<td>01-10-2021</td>
+								<td><span class="status pending">Pending</span></td>
+							</tr>
+							<tr>
+								<td>
+									<img src="img/profileimg.png">
+									<p>Pranjal</p>
+								</td>
+								<td>01-10-2023</td>
+								<td><span class="status process">Process</span></td>
+							</tr>
+							<tr>
+								<td>
+									<img src="img/profileimg.png">
+									<p>vaibhavee</p>
+								</td>
+								<td>01-10-2023</td>
+								<td><span class="status pending">Pending</span></td>
+							</tr>
+							<tr>
+								<td>
+									<img src="img/profileimg.png">
+									<p>Rudra</p>
+								</td>
+								<td>01-10-2023</td>
+								<td><span class="status completed">Completed</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="chatbox" >
+					<div class="left"  id="chatBox">
+						<ul class="people">
+							{% for friend in user.friends.all%}
+							<li class="person" data-chat="person2" onclick="openChat('{{friend.id}}','{{user.id}}','{{friend.username}}')">
+								
+								<span  class="name">{{friend.username}}</span>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+					{% comment %} <div class="right">
+						<div class="top"><span>To: <span class="name">Mota bhai</span></span></div>
+						
+						<div class="chat" data-chat="person2">
+							
+							<div class="bubble you">
+								Hello
+							</div>
+							<div class="bubble you">
+								sab badia?
+							</div>
+							<div class="bubble me">
+								badia!
+							</div>
+							
+						</div>
+						<div class="write">
+                
+							<input type="text" />
+							<button>Send</button>
+						
+							<a href="javascript:;" class="write-link send"></a>
+						</div>
+					</div>	  {% endcomment %}
+				</div>
+			</div>
+		</main>
+		<!-- MAIN -->
+	<script>
+		
+		function openChat(reciever_id,sender_id,reciever_name) {
+			
+			const chatBox = document.getElementById('chatBox');
+			chatBox.innerHTML = `<div class="top">To: <span  class="name">${reciever_name}</span></div>
+			
+			<div class="chat" data-chat="person2" id="msgbox" >
+				
+				
+				
+			</div>
+			<div class="write">
+	
+				<input id="chat-message-input" type="text" />
+				<button id="chat-message-submit">Send</button>
+			
+				<a href="javascript:;" class="write-link send"></a>
+			</div>`; 
+			
+
+			const socket = new WebSocket('ws://'+window.location.host+'/ws/'+reciever_id+'/');
+			socket.onopen = function(e){
+				console.log("CONNECTION ESTABLISHED", 'ws://'+window.location.host+'/ws/'+reciever_id+'/');
+			}
+			
+			socket.onclose = function(e){
+				console.log("CONNECTION LOST", 'ws://'+window.location.host+'/ws/'+reciever_id+'/');
+			}
+			
+			socket.onerror = function(e){
+				console.log("ERROR OCCURED", 'ws://'+window.location.host+'/ws/'+reciever_id+'/');
+			}
+
+			document.querySelector('#chat-message-input').focus();
+			document.querySelector('#chat-message-input').onkeyup = function(e) {
+				if (e.keyCode === 13) {  // enter, return
+					document.querySelector('#chat-message-submit').click();
+				}
+			};
+
+			socket.onmessage = function(e){
+				const data = JSON.parse(e.data);
+				console.log(data.message);
+				const msgBox = document.getElementById('msgbox');
+				if(data.user_id==reciever_id){
+					msgBox.innerHTML+=`<div class="bubble me">
+						${data.message}
+					</div>`;
+				}else{
+					msgBox.innerHTML+=`<div class="bubble you">
+						${data.message}
+					</div>`;
+				}
+				
+				
+			}
+			
+			
+			document.querySelector('#chat-message-submit').onclick = function(e){
+				const message_input = document.querySelector('#chat-message-input');
+				const message = message_input.value;
+				console.log("This is the message", message_input.value);
+				socket.send(JSON.stringify({
+					'message':message,
+					'username':reciever_id
+				}));
+				console.log({
+					'message':message,
+					'username':reciever_id
+				});
+				message_input.value = '';
+			}
+		}
+
+			
+		
+	</script>
+
+{%endblock%}

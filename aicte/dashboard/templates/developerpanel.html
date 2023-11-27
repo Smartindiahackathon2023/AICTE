@@ -134,8 +134,7 @@
 	<script src="{% static 'developerpanel.js' %}"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script>
-	// Get the form element by its ID or any other suitable method
-	let orginal_length =0;
+		let orginal_length =0;
 	const button = document.getElementById("tohtmlbutton");
 	var formBodyElement = document.getElementById('curriculumn');
 	if (formBodyElement) {
@@ -162,14 +161,13 @@
 		} else {
 			console.log("Form body element not found.");
 		}
+		const edjsHTML = require("editorjs-html");
 		const edjsParser = edjsHTML();
 		const HTML = edjsParser.parse(jsonData);
 		// returns array of html strings per block
 		console.log(HTML);
+		
     });
-
-
-
 	</script>
 	
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .forms import CurriculumnForm
 from django.contrib import messages
-from register.models import customuser,Developer
+from register.models import Developer
 from .models import Curriculumn
 from pyeditorjs import EditorJsParser
 from django.shortcuts import render
@@ -19,7 +19,7 @@ def developerpanel(request):
             html = parser.html() # `sanitize=True` requires `bleach` to be installed
             print(html) # your clean HTML
             user_email=request.session.get('user_email')
-            user=customuser.objects.get(email=user_email)
+            user=Developer.objects.get(email=user_email)
             curriculumn=Curriculumn(body=body)
             curriculumn.save()
             curriculumn.user.add(user)
@@ -42,7 +42,10 @@ def integrate_with_google_calendar(request):
     
 def dashboard(request):
     if request.method=="GET":
-        return render(request,'developer_dahboard.html')
+        user=request.user
+        user_friends=user.friends.all()
+        
+        return render(request,'dahboard.html',{'user':user})
     
 def tohtml(request):
     if request.method=="POST":
