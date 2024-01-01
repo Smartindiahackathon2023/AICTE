@@ -323,6 +323,7 @@ body {
 	justify-content: center;
 	align-items: center;
 }
+#content 
 #content main {
 	width: 100%;
 	padding: 36px 24px;
@@ -420,7 +421,10 @@ body {
 	color: var(--dark);	
 	font-size: 20px;
 }
-
+#center button{
+	align-items: center;
+	justify-content: center;
+}
 
 
 

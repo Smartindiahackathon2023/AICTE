@@ -17,7 +17,7 @@
 						</li>
 					</ul>
 				</div>
-				<a href="/dashboard/develop" class="btn-download">
+				<a href="/dashboard/develop/" class="btn-download">
 					<i class='bx bxs-cloud-download' ></i>
 					<span class="text">Create Curriculumn</span>
 				</a>
@@ -108,64 +108,67 @@
 					</table>
 				</div>
 				<div class="chatbox" >
-					<div class="left"  id="chatBox">
+					<div class="left" id="left">
 						<ul class="people">
 							{% for friend in user.friends.all%}
-							<li class="person" data-chat="person2" onclick="openChat('{{friend.id}}','{{user.id}}','{{friend.username}}')">
-								
+							<li class="person" data-chat="person2" onclick="openChat('{{friend.id}}','{{user.id}}','{{friend.username}}',`{% url "getmsgs" user.id friend.id %}`)">
 								<span  class="name">{{friend.username}}</span>
 							</li>
 							{% endfor %}
 						</ul>
 					</div>
-					{% comment %} <div class="right">
-						<div class="top"><span>To: <span class="name">Mota bhai</span></span></div>
-						
-						<div class="chat" data-chat="person2">
-							
-							<div class="bubble you">
-								Hello
-							</div>
-							<div class="bubble you">
-								sab badia?
-							</div>
-							<div class="bubble me">
-								badia!
-							</div>
-							
+					<div class="right" id="right">
+						<div class="top" >To: <span id="name" class="name"></span></div>
+			
+						<div class="chat" data-chat="person2" id="msgbox" >
+				
+			
+				
 						</div>
-						<div class="write">
-                
-							<input type="text" />
-							<button>Send</button>
-						
+						<div class="write" >
+	
+							<input class="chat-message-input" id="chat-message-input" type="text" />
+							<button class="chat-message-submit" id="chat-message-submit">Send</button>
+			
 							<a href="javascript:;" class="write-link send"></a>
 						</div>
-					</div>	  {% endcomment %}
+					</div>	  
 				</div>
 			</div>
 		</main>
 		<!-- MAIN -->
 	<script>
 		
-		function openChat(reciever_id,sender_id,reciever_name) {
+		
+		function openChat(reciever_id,sender_id,reciever_name,url) {
 			
-			const chatBox = document.getElementById('chatBox');
-			chatBox.innerHTML = `<div class="top">To: <span  class="name">${reciever_name}</span></div>
+			document.getElementById("left").style.display="none";
+			document.getElementById("right").style.display="block";
+			const msgBox = document.getElementById('msgbox');
 			
-			<div class="chat" data-chat="person2" id="msgbox" >
+			fetch(url, {
+				method: 'GET',
 				
-				
-				
-			</div>
-			<div class="write">
-	
-				<input id="chat-message-input" type="text" />
-				<button id="chat-message-submit">Send</button>
+			  })
+			  .then(response => response.json())
+			  .then(data => {
+				console.log('Success:', data.msg_list);
+				for(let a in data.msg_list){
+					if(data.msg_list[a].sender_id==sender_id){
+						msgBox.innerHTML+=`<div class="bubble me">
+							${data.msg_list[a].message}
+						</div>`;
+					}else{
+						msgBox.innerHTML+=`<div class="bubble you">
+							${data.msg_list[a].message}
+						</div>`;
+					}
+				}
+			  })
+			  
+
 			
-				<a href="javascript:;" class="write-link send"></a>
-			</div>`; 
-			
+			document.getElementById("name").innerHTML=`${reciever_name}`
 
 			const socket = new WebSocket('ws://'+window.location.host+'/ws/'+reciever_id+'/');
 			socket.onopen = function(e){
@@ -190,8 +193,8 @@
 			socket.onmessage = function(e){
 				const data = JSON.parse(e.data);
 				console.log(data.message);
-				const msgBox = document.getElementById('msgbox');
-				if(data.user_id==reciever_id){
+				
+				if(data.reciever_id==reciever_id){
 					msgBox.innerHTML+=`<div class="bubble me">
 						${data.message}
 					</div>`;
@@ -205,17 +208,20 @@
 			}
 			
 			
-			document.querySelector('#chat-message-submit').onclick = function(e){
+			document.getElementById('chat-message-submit').onclick = function(e){
+				
 				const message_input = document.querySelector('#chat-message-input');
 				const message = message_input.value;
 				console.log("This is the message", message_input.value);
 				socket.send(JSON.stringify({
 					'message':message,
-					'username':reciever_id
+					'reciever_id':reciever_id,
+					'sender_id':sender_id
 				}));
 				console.log({
 					'message':message,
-					'username':reciever_id
+					'reciever_id':reciever_id,
+					'sender_id':sender_id
 				});
 				message_input.value = '';
 			}

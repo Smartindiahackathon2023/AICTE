@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .forms import CurriculumnForm
 from django.contrib import messages
 from register.models import Developer
-from .models import Curriculumn
+from .models import Curriculumn,Message
 from pyeditorjs import EditorJsParser
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
@@ -15,19 +15,17 @@ def developerpanel(request):
             
             body=form.cleaned_data['body']
             parser = EditorJsParser(body) # initialize the parser
-
-            html = parser.html() # `sanitize=True` requires `bleach` to be installed
-            print(html) # your clean HTML
-            user_email=request.session.get('user_email')
+            
+            user_email=request.user.email
             user=Developer.objects.get(email=user_email)
             curriculumn=Curriculumn(body=body)
             curriculumn.save()
             curriculumn.user.add(user)
             print(curriculumn)
-            return redirect('/dashboard/develop')      
+            return redirect('/dashboard/develop/')      
     form=CurriculumnForm()
     
-    curriculumn=get_object_or_404(Curriculumn,id=16)
+    curriculumn=get_object_or_404(Curriculumn,id=1)
     form=CurriculumnForm(instance=curriculumn)
     return render(request,'developerpanel.html',{'form':form})
 
@@ -44,27 +42,19 @@ def dashboard(request):
     if request.method=="GET":
         user=request.user
         user_friends=user.friends.all()
-        
         return render(request,'dahboard.html',{'user':user})
-    
-def tohtml(request):
-    if request.method=="POST":
-        print('hello')
-        return JsonResponse({'message':"hello"})
-    
-    
-    
-    # var token=$('input[name=csrfmiddlewaretoken]').val();
-	# 	jQuery.ajax({
-	# 		method:"POST",
-	# 		url:"{% url 'tohtml' %}",
-	# 		data:{csrfmiddlewaretoken:token},
-	# 		dataType:'json',
-	# 		success: function(response){
-	# 			console.log(response.message)
-				
-	# 		  }
 
-
-	# 	})
+def getmsgs(request,senderid,recieverid):
+     
+    if request.method=="GET":
         
+        if int(senderid) > int(recieverid):
+            room_name = f'{senderid}-{recieverid}'
+        else:
+            room_name = f'{recieverid}-{senderid}'
+
+        room_group_name = 'chat_%s' % room_name
+        msgs=Message.objects.filter(thread_name=room_group_name).order_by('timestamp')
+        msg_list= list(msgs.values())
+        return JsonResponse({'msg_list':msg_list,'status':'msg sent'})
+

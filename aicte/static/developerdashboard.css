@@ -14,6 +14,7 @@ li {
 	list-style: none;
 }
 
+
 :root {
 	--poppins: 'Poppins', sans-serif;
 	--lato: 'Lato', sans-serif;
@@ -535,57 +536,59 @@ body {
 #content main .table-data .chatbox .right{
 	/* background-color: green; */
 	width:100%;
-	height:100%;
+	height:500px;
 }
 #content main .table-data .chatbox .left{
 	height:100%;
 	width:100%;
-	border-right: 1px solid grey;
+	
 	/* background-color: yellow; */
 }
-.left{
+.right{
+	display: none;
 	position: relative;
 	.top {
 		width: 100%;
 		height: 47px;
-		padding: 15px 29px;
+		padding: 15px 30px;
 		background-color: #eceff1;
 		
-	}
+	} 
 	.chat {
-		position: relative;
-		
-		padding: 0 35px 92px;
-		/* border-width: 1px 0px 0px 0px; */
+		position:relative;
+		padding: 0 35px 32px;
+		overflow-x: hidden;
+		overflow-y:auto;
 		border-style: solid;
 		border-color: grey;
-		height: calc(100% - 48px);
-		justify-content: flex-end;
+		height: calc(100% - 60px);
+		
+		display: flex;
 		flex-direction: column;
-		&.active-chat {
-			display: block;
-			display: flex;
-			
-		}
+		
+
+
+		
+  		
 	}
 	.write {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		position: absolute;
+		display: flex block;
+		justify-content: flex;
+		position: relative;
 		bottom: 0;
-  		left: 0;
-		/* background-color: yellow; */
+  		right: 0;
+		width:100%;
+		height: 20px;
 		
-		button{
-			
-			width:100%;
-			height:100%;
+		.chat-message-input {
+			width: 80%;
 		}
-		
-	}
+		.chat-message-submit{
+			width: 20%;
+		}
+	} 
 	.bubble {
-		font-size: 16px;
+		font-size: 12px;
 		position: relative;
 		display: inline-block;
 		clear: both;

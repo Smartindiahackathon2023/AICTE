@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from register.models import Developer
 from channels.generic.websocket import WebsocketConsumer
 from channels.db import database_sync_to_async
-
+from .models import Message
 from django.contrib.auth.models import User
 
 class PersonalChatConsumer(WebsocketConsumer):
@@ -26,24 +26,35 @@ class PersonalChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
         message = data['message']
-        username = data['username']
-        
+        reciever_id = data['reciever_id']
+        sender_id=data['sender_id']
+        reciever=Developer.objects.get(id=reciever_id)
+        sender=Developer.objects.get(id=sender_id)
+        self.save_message(sender, self.room_group_name, message)
         
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'message': message,
-                'username': username,
+                'sender_id': sender_id,
+                'reciever_id': reciever_id
             }
         )
     def chat_message(self, event):
         message = event['message']
-        user_id = event['username']
-        user_obj = Developer.objects.get(id=user_id)
+        
+        
         self.send(text_data=json.dumps({
             'message': message,
-            'username' : user_obj.username,
-            'user_id': user_id
+            'sender_id' : event['sender_id'],
+            'reciever_id': event['reciever_id']
         }))
-        print(f"{user_obj.username} : Messaage sent")
+        print("msg sent")
+    
+    def save_message(self, sender, thread_name, message):
+        print("Message going to saved")
+        new_message = Message.objects.create(
+            sender=sender, message=message, thread_name=thread_name)
+        new_message.save()
+        return "Succes"
